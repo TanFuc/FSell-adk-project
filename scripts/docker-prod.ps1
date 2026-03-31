@@ -1,6 +1,6 @@
 param(
-  [ValidateSet('build', 'build-be', 'build-fe', 'up', 'down', 'logs', 'setup')]
-  [string]$Action = 'build'
+  [ValidateSet('build-all', 'build-be', 'build-fe', 'up-all', 'up-be', 'up-fe', 'down', 'logs', 'setup')]
+  [string]$Action = 'build-be'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -30,7 +30,7 @@ if (-not (Test-Path $EnvFile)) {
 Push-Location $Root
 try {
   switch ($Action) {
-    'build' {
+    'build-all' {
       docker compose --env-file .env -f docker-compose.prod.yml build --pull --parallel
     }
     'build-be' {
@@ -39,8 +39,14 @@ try {
     'build-fe' {
       docker compose --env-file .env -f docker-compose.prod.yml build --pull frontend
     }
-    'up' {
+    'up-all' {
       docker compose --env-file .env -f docker-compose.prod.yml up -d
+    }
+    'up-be' {
+      docker compose --env-file .env -f docker-compose.prod.yml up -d postgres redis backend
+    }
+    'up-fe' {
+      docker compose --env-file .env -f docker-compose.prod.yml up -d frontend
     }
     'down' {
       docker compose --env-file .env -f docker-compose.prod.yml down

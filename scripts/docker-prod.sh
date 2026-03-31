@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ACTION="${1:-build}"
+ACTION="${1:-build-be}"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 cd "$ROOT_DIR"
@@ -27,7 +27,7 @@ if [[ ! -f ".env" ]]; then
 fi
 
 case "$ACTION" in
-  build)
+  build-all)
     docker compose --env-file .env -f docker-compose.prod.yml build --pull --parallel
     ;;
   build-be)
@@ -36,8 +36,14 @@ case "$ACTION" in
   build-fe)
     docker compose --env-file .env -f docker-compose.prod.yml build --pull frontend
     ;;
-  up)
+  up-all)
     docker compose --env-file .env -f docker-compose.prod.yml up -d
+    ;;
+  up-be)
+    docker compose --env-file .env -f docker-compose.prod.yml up -d postgres redis backend
+    ;;
+  up-fe)
+    docker compose --env-file .env -f docker-compose.prod.yml up -d frontend
     ;;
   down)
     docker compose --env-file .env -f docker-compose.prod.yml down
@@ -52,7 +58,7 @@ case "$ACTION" in
     echo "Run migration if needed: docker compose --env-file .env -f docker-compose.prod.yml exec backend npm run prisma:deploy"
     ;;
   *)
-    echo "Usage: ./scripts/docker-prod.sh [build|build-be|build-fe|up|down|logs|setup]"
+    echo "Usage: ./scripts/docker-prod.sh [build-all|build-be|build-fe|up-all|up-be|up-fe|down|logs|setup]"
     exit 1
     ;;
 esac
