@@ -17,8 +17,10 @@ import { PartnershipFaqModule } from './partnership-faq/partnership-faq.module';
 import { ClickTrackingModule } from './click-tracking/click-tracking.module';
 import { PhotoCategoryModule } from './photo-category/photo-category.module';
 import { PhotoModule } from './photo/photo.module';
+import { HealthController } from './health.controller';
 
 @Module({
+  controllers: [HealthController],
   imports: [
     // Environment Configuration
     ConfigModule.forRoot({
