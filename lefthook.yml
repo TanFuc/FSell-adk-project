@@ -1,0 +1,12 @@
+pre-commit:
+  parallel: false
+  commands:
+    cleanup-debug-and-tags:
+      run: node scripts/cleanup-debug-tags.mjs --write
+
+    format-backend:
+      glob: backend/src/**/*.ts
+      run: npx --prefix backend prettier --write -- {staged_files}
+
+    test-backend:
+      run: cd backend && npm run test -- --passWithNoTests
