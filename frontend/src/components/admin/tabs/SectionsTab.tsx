@@ -174,7 +174,8 @@ export function SectionsTab() {
     };
 
     if (editingItem) {
-      updateMutation.mutate({ id: editingItem.id, data });
+      const { key, ...updateData } = data;
+      updateMutation.mutate({ id: editingItem.id, data: updateData });
     } else {
       createMutation.mutate(data);
     }

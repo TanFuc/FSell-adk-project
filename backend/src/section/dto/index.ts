@@ -92,7 +92,6 @@ export class UpdateSectionDto {
     description: 'Content (title, subtitle, richText)',
   })
   @IsOptional()
-  @IsObject({ message: 'Content must be a JSON object' })
   content?: Record<string, unknown>;
 
   @ApiPropertyOptional({

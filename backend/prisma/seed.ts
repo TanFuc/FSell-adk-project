@@ -1,4 +1,5 @@
 import { PrismaClient, LayoutType, ContentType } from '@prisma/client';
+import { randomBytes, scryptSync } from 'crypto';
 
 const prisma = new PrismaClient();
 
@@ -28,7 +29,9 @@ async function main() {
     {
       key: 'site_name',
       value: {
+        prefix: 'Dự Án',
         name: 'Dự Án Phát Triển Chuỗi Nhà Thuốc ADK',
+        fullName: 'Dự Án Nhượng Quyền ADK',
         shortName: 'Nhượng Quyền ADK',
         tagline: 'Mô hình Siêu Thị Thuốc & Thực Phẩm Sức Khỏe - Xu hướng 2025',
       },
@@ -494,7 +497,8 @@ async function main() {
       layoutType: LayoutType.HERO_IMAGE,
       content: {
         title: 'DỰ ÁN PHÁT TRIỂN CHUỐI NHÀ THUỐC ADK',
-        subtitle: 'Mô Hình Siêu Thị Thuốc & Thực Phẩm Sức Khỏe - Xu Hướng Kinh Doanh Bền Vững 2025.',
+        subtitle:
+          'Mô Hình Siêu Thị Thuốc & Thực Phẩm Sức Khỏe - Xu Hướng Kinh Doanh Bền Vững 2025.',
         ctaText: 'Đăng Ký Hợp Tác Ngay',
         stats: [
           { value: 'Hơn 10', label: 'Năm kinh nghiệm' },
@@ -511,7 +515,8 @@ async function main() {
       key: 'market_insight',
       layoutType: LayoutType.TEXT_ONLY,
       content: {
-        title: 'Nắm Bắt Xu Hướng Tương Lai',
+        title: 'Nắm Bắt',
+        titleHighlight: 'Xu Hướng Tương Lai',
         subtitle: 'Thị Trường 2025',
         description:
           'Năm 2025, người tiêu dùng chuyển từ "Chữa Bệnh" sang "Chăm Sóc Sức Khỏe Chủ Động". Mô hình ADK giải quyết với sự kết hợp hoàn hảo giữa Nhà Thuốc GPP và Siêu Thị Thực Phẩm Sức Khỏe.',
@@ -529,8 +534,9 @@ async function main() {
       key: 'adk_model',
       layoutType: LayoutType.SPLIT_IMAGE_TEXT,
       content: {
-        title: 'Mô Hình ADK',
-        subtitle: 'Giao Điểm Của Thuốc & Dinh Dưỡng',
+        title: 'Giao Thoa',
+        titleHighlight: 'Y Học & Dinh Dưỡng',
+        subtitle: 'Mô Hình Tiên Phong',
         leftColumn: {
           title: 'Nhà Thuốc GPP Hiện Đại',
           items: [
@@ -540,10 +546,10 @@ async function main() {
           ],
         },
         rightColumn: {
-          title: 'Siêu Thị Tự Phục Vụ',
-          items: ['Sữa thực vật, Sữa tươi hữu cơ', 'Thực phẩm hữu cơ', 'Đặc sản OCOP vùng miền'],
+          title: 'Siêu Thị Tự Chọn',
+          items: ['Sữa hạt, Sữa tươi hữu cơ', 'Thực phẩm Organic', 'Đặc sản OCOP các vùng miền'],
         },
-        bottomText: 'Chuyển đổi nhà thuốc truyền thống thành điểm đến Sống Khỏe.',
+        bottomText: 'Biến nhà thuốc truyền thống thành điểm đến Healthy Living Hub',
       },
       images: ['/images/model/pharmacy-side.jpg', '/images/model/supermarket-side.jpg'],
       sortOrder: 2,
@@ -630,6 +636,7 @@ async function main() {
       content: {
         title: 'Câu Chuyện Thành Công',
         subtitle: 'Từ các đối tác của chúng tôi',
+        autoPlayInterval: 6000,
         cards: [
           {
             id: 1,
@@ -659,7 +666,11 @@ async function main() {
           },
         ],
       },
-      images: [],
+      images: [
+        'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=1200&q=80',
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=1200&q=80',
+        'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=1200&q=80',
+      ],
       sortOrder: 6,
       isVisible: true,
     },
@@ -669,6 +680,8 @@ async function main() {
       content: {
         title: 'Lộ Trình Hợp Tác',
         subtitle: 'Từ ý tưởng đến khai trương',
+        description:
+          'Lộ trình 6 bước: Tuần 1-2 tư vấn & khảo sát; Tuần 3 ký hợp đồng; Tuần 4-5 thiết kế & chuẩn bị; Tuần 6-9 thi công & lắp đặt; Tuần 10 đào tạo nhân viên; Tuần 11 khai trương.',
         steps: [
           {
             phase: 'Tuần 1-2',
@@ -683,7 +696,8 @@ async function main() {
           {
             phase: 'Tuần 4-5',
             title: 'Thiết Kế & Chuẩn Bị',
-            description: 'Thiết kế 3D cửa hàng, làm thủ tục giấy phép, đặt hàng thiết bị và sản phẩm',
+            description:
+              'Thiết kế 3D cửa hàng, làm thủ tục giấy phép, đặt hàng thiết bị và sản phẩm',
           },
           {
             phase: 'Tuần 6-9',
@@ -712,42 +726,48 @@ async function main() {
       content: {
         title: 'Danh Mục Sản Phẩm Đa Dạng',
         subtitle: 'Hơn 5,000 SKU từ 200+ thương hiệu uy tín',
-        features: [
+        items: [
           {
-            icon: 'pill',
+            id: 'prescription',
             title: 'Thuốc Kê Đơn & Thuốc Không Kê Đơn',
-            description: 'Hơn 2,000 SKU từ các công ty dược hàng đầu',
-            stat: '40%',
+            description: 'Hơn 2,000 SKU từ các công ty dược hàng đầu (40% doanh thu).',
+            icon: 'package',
+            size: 'large',
           },
           {
-            icon: 'heart',
+            id: 'supplement',
             title: 'Thực Phẩm Bảo Vệ Sức Khỏe',
-            description: 'Vitamin, khoáng chất, sản phẩm thảo dược',
-            stat: '25%',
+            description: 'Vitamin, khoáng chất, sản phẩm thảo dược (25%).',
+            icon: 'badge',
+            size: 'medium',
           },
           {
-            icon: 'droplet',
+            id: 'cosmeceutical',
             title: 'Dược Mỹ Phẩm',
-            description: 'Chăm sóc da và tóc từ thương hiệu y khoa',
-            stat: '15%',
+            description: 'Chăm sóc da và tóc từ thương hiệu y khoa (15%).',
+            icon: 'badge',
+            size: 'medium',
           },
           {
-            icon: 'leaf',
+            id: 'organic',
             title: 'Thực Phẩm Hữu Cơ',
-            description: 'Sữa thực vật, ngũ cốc, thực phẩm sạch',
-            stat: '10%',
+            description: 'Sữa thực vật, ngũ cốc, thực phẩm sạch (10%).',
+            icon: 'package',
+            size: 'large',
           },
           {
-            icon: 'baby',
+            id: 'mom-baby',
             title: 'Mẹ & Bé',
-            description: 'Sữa bột, tã giấy, sản phẩm cho bé',
-            stat: '7%',
+            description: 'Sữa bột, tã giấy, sản phẩm cho bé (7%).',
+            icon: 'badge',
+            size: 'medium',
           },
           {
-            icon: 'stethoscope',
+            id: 'medical-device',
             title: 'Thiết Bị Y Tế',
-            description: 'Máy đo huyết áp, đường huyết, nhiệt kế',
-            stat: '3%',
+            description: 'Máy đo huyết áp, đường huyết, nhiệt kế (3%).',
+            icon: 'package',
+            size: 'medium',
           },
         ],
       },
@@ -922,7 +942,8 @@ async function main() {
     {
       type: ContentType.FEATURE,
       title: 'Thương Hiệu Uy Tín',
-      description: 'Hệ thống nhận diện thương hiệu thống nhất, chuyên nghiệp. Được khách hàng tin tưởng.',
+      description:
+        'Hệ thống nhận diện thương hiệu thống nhất, chuyên nghiệp. Được khách hàng tin tưởng.',
       content: { icon: 'badge' },
       sortOrder: 3,
     },
@@ -1174,7 +1195,7 @@ async function main() {
   for (const photo of photos) {
     // Create for specific category
     await prisma.photo.create({ data: photo });
-    
+
     // Also create for "Tất Cả" category if not already in it
     if (photo.categoryId !== createdCategories['tat-ca'].id) {
       await prisma.photo.create({
@@ -1193,7 +1214,6 @@ async function main() {
 
   // Helper function to hash password (same as AuthService)
   function hashPassword(password: string): string {
-    const { randomBytes, scryptSync } = require('crypto');
     const salt = randomBytes(16).toString('hex');
     const hash = scryptSync(password, salt, 64).toString('hex');
     return `${salt}:${hash}`;

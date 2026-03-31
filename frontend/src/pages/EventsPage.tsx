@@ -407,9 +407,6 @@ export default function EventsPage() {
               <p className="text-gray-500 max-w-md mx-auto mb-4">
                 Các sự kiện mới sẽ được cập nhật sớm. Đăng ký ngay để không bỏ lỡ thông tin!
               </p>
-              <p className="text-sm text-gray-400 mb-8">
-                Debug: Featured={featuredEvents.length}, All={allEvents.length}
-              </p>
               <RedirectButton
                 buttonName="empty_events_register"
                 className="mx-auto"

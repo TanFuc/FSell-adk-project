@@ -8,8 +8,12 @@ interface SplitImageTextSectionProps {
 
 interface SplitContent {
   title?: string;
+  titleHighlight?: string;
   subtitle?: string;
   description?: string;
+  leftColumn?: { title?: string; items?: string[] };
+  rightColumn?: { title?: string; items?: string[] };
+  bottomText?: string;
   features?: Array<{ icon: string; text: string }>;
 }
 
@@ -23,6 +27,7 @@ export default function SplitImageTextSection({ section }: SplitImageTextSection
   const content = section.content as SplitContent;
   const leftImage = section.images[0];
   const rightImage = section.images[1];
+  const hasColumns = Boolean(content.leftColumn || content.rightColumn);
 
   return (
     <section className="py-16 lg:py-24 bg-white overflow-hidden">
@@ -39,53 +44,119 @@ export default function SplitImageTextSection({ section }: SplitImageTextSection
               {content.subtitle}
             </span>
           )}
-          <h2 className="text-3xl lg:text-5xl font-bold text-gray-900">{content.title}</h2>
+          <h2 className="text-3xl lg:text-5xl font-bold text-gray-900">
+            {content.title}
+            {content.titleHighlight && (
+              <span className="text-adk-green"> {content.titleHighlight}</span>
+            )}
+          </h2>
         </motion.div>
 
-        {/* Split Layout */}
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          {/* Left Image */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="relative"
-          >
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-              <img
-                src={leftImage || "/images/placeholder.jpg"}
-                alt="Nhà thuốc"
-                className="w-full h-80 lg:h-96 object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-adk-green/80 to-transparent" />
-              <div className="absolute bottom-4 left-4 right-4 text-white">
-                <span className="text-lg font-semibold">Nhà Thuốc GPP</span>
+        {hasColumns ? (
+          <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-2xl p-8 shadow-lg border-2 border-adk-green/20"
+            >
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-14 h-14 rounded-xl bg-adk-green flex items-center justify-center">
+                  <Pill className="w-7 h-7 text-white" />
+                </div>
+                {content.leftColumn?.title && (
+                  <h3 className="text-2xl font-bold text-gray-900">{content.leftColumn.title}</h3>
+                )}
               </div>
-            </div>
-          </motion.div>
+              {content.leftColumn?.items && content.leftColumn.items.length > 0 && (
+                <ul className="space-y-3">
+                  {content.leftColumn.items.map((item, index) => (
+                    <li key={index} className="flex items-center gap-3 text-gray-600">
+                      <Pill className="w-5 h-5 text-adk-green flex-shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </motion.div>
 
-          {/* Right Image */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative"
-          >
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-              <img
-                src={rightImage || "/images/placeholder.jpg"}
-                alt="Thực phẩm hữu cơ"
-                className="w-full h-80 lg:h-96 object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-adk-blue/80 to-transparent" />
-              <div className="absolute bottom-4 left-4 right-4 text-white">
-                <span className="text-lg font-semibold">Siêu Thị Thực Phẩm Sạch</span>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-2xl p-8 shadow-lg border-2 border-adk-blue/20"
+            >
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-14 h-14 rounded-xl bg-adk-blue flex items-center justify-center">
+                  <Leaf className="w-7 h-7 text-white" />
+                </div>
+                {content.rightColumn?.title && (
+                  <h3 className="text-2xl font-bold text-gray-900">{content.rightColumn.title}</h3>
+                )}
               </div>
-            </div>
-          </motion.div>
-        </div>
+              {content.rightColumn?.items && content.rightColumn.items.length > 0 && (
+                <ul className="space-y-3">
+                  {content.rightColumn.items.map((item, index) => (
+                    <li key={index} className="flex items-center gap-3 text-gray-600">
+                      <Leaf className="w-5 h-5 text-adk-blue flex-shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </motion.div>
+          </div>
+        ) : (
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="relative"
+            >
+              {leftImage && (
+                <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+                  <img
+                    src={leftImage}
+                    alt=""
+                    className="w-full h-80 lg:h-96 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-adk-green/80 to-transparent" />
+                  {content.leftColumn?.title && (
+                    <div className="absolute bottom-4 left-4 right-4 text-white">
+                      <span className="text-lg font-semibold">{content.leftColumn.title}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="relative"
+            >
+              {rightImage && (
+                <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+                  <img
+                    src={rightImage}
+                    alt=""
+                    className="w-full h-80 lg:h-96 object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-adk-blue/80 to-transparent" />
+                  {content.rightColumn?.title && (
+                    <div className="absolute bottom-4 left-4 right-4 text-white">
+                      <span className="text-lg font-semibold">{content.rightColumn.title}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </motion.div>
+          </div>
+        )}
 
         {/* Description & Features */}
         <motion.div
@@ -95,7 +166,15 @@ export default function SplitImageTextSection({ section }: SplitImageTextSection
           transition={{ delay: 0.3 }}
           className="mt-12 lg:mt-16 text-center max-w-4xl mx-auto"
         >
-          <p className="text-lg lg:text-xl text-gray-600 mb-8">{content.description}</p>
+          {content.description && (
+            <p className="text-lg lg:text-xl text-gray-600 mb-8">{content.description}</p>
+          )}
+
+          {content.bottomText && (
+            <p className="text-xl text-gray-700 font-medium mb-8">
+              {content.bottomText}
+            </p>
+          )}
 
           {content.features && content.features.length > 0 && (
             <div className="flex flex-wrap justify-center gap-4 lg:gap-6">

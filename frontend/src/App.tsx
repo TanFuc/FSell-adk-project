@@ -1,6 +1,7 @@
-import { lazy, Suspense } from "react";
+import { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
+import ScrollToTop from "@/components/common/ScrollToTop";
 
 // Lazy load pages for code-splitting
 const LandingPage = lazy(() => import("@/pages/LandingPage"));
@@ -31,6 +32,7 @@ function PageLoader() {
 function App() {
   return (
     <>
+      <ScrollToTop />
       <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* Public Routes */}

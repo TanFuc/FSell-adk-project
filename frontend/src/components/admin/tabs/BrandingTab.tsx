@@ -11,7 +11,9 @@ import { adminApi } from "@/services/api";
 import type { Configuration } from "@/types";
 
 interface SiteNameConfig {
+  prefix?: string;
   shortName?: string;
+  name?: string;
   fullName?: string;
   tagline?: string;
 }
@@ -45,6 +47,7 @@ export function BrandingTab() {
 
   // Form states
   const [siteName, setSiteName] = useState<SiteNameConfig>({
+    prefix: "",
     shortName: "",
     fullName: "",
     tagline: "",
@@ -88,9 +91,13 @@ export function BrandingTab() {
       };
 
       const siteNameData = getConfig<SiteNameConfig>("site_name");
+      const shortName = siteNameData.shortName || "";
+      const fullName = siteNameData.fullName || siteNameData.name || "";
+      const derivedPrefix = fullName.replace(shortName, "").trim();
       setSiteName({
-        shortName: siteNameData.shortName || "",
-        fullName: siteNameData.fullName || "",
+        prefix: siteNameData.prefix || derivedPrefix,
+        shortName,
+        fullName,
         tagline: siteNameData.tagline || "",
       });
 
@@ -139,7 +146,12 @@ export function BrandingTab() {
       await Promise.all([
         saveMutation.mutateAsync({
           key: "site_name",
-          value: siteName,
+          value: {
+            ...siteName,
+            // Keep backward compatibility and store a combined full name.
+            fullName: `${siteName.prefix || ""} ${siteName.shortName || ""}`.trim(),
+            name: `${siteName.prefix || ""} ${siteName.shortName || ""}`.trim(),
+          },
           description: "Tên và slogan của website",
         }),
         saveMutation.mutateAsync({
@@ -223,6 +235,15 @@ export function BrandingTab() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-2">
+              <Label htmlFor="prefix">Phần chữ đen (tiền tố)</Label>
+              <Input
+                id="prefix"
+                value={siteName.prefix}
+                onChange={(e) => setSiteName({ ...siteName, prefix: e.target.value })}
+                placeholder="VD: Dự Án"
+              />
+            </div>
+            <div className="grid gap-2">
               <Label htmlFor="shortName">Tên ngắn</Label>
               <Input
                 id="shortName"
@@ -233,12 +254,20 @@ export function BrandingTab() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="fullName">Tên đầy đủ</Label>
-              <Input
+              <div
                 id="fullName"
-                value={siteName.fullName}
-                onChange={(e) => setSiteName({ ...siteName, fullName: e.target.value })}
-                placeholder="VD: Siêu Thị Thuốc ADK"
-              />
+                className="min-h-11 rounded-md border border-adk-green/40 bg-white px-3 py-2 flex items-center"
+              >
+                <span className="text-gray-900 font-semibold">
+                  {(siteName.prefix || "").trim() || "Dự Án"}
+                </span>
+                <span className="text-adk-green font-semibold ml-2">
+                  {(siteName.shortName || "").trim() || "Nhượng Quyền ADK"}
+                </span>
+              </div>
+              <p className="text-xs text-gray-500">
+                Bản xem trước tên thương hiệu: phần chữ đen + phần chữ xanh.
+              </p>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="tagline">Slogan</Label>

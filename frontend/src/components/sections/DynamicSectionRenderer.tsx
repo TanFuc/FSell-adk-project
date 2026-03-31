@@ -39,6 +39,12 @@ export default function DynamicSectionRenderer({ sections }: DynamicSectionRende
             <div className="container-full text-center max-w-4xl mx-auto">
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
                 {(section.content as { title?: string }).title}
+                {(section.content as { titleHighlight?: string }).titleHighlight && (
+                  <span className="text-adk-green">
+                    {" "}
+                    {(section.content as { titleHighlight?: string }).titleHighlight}
+                  </span>
+                )}
               </h2>
               <p className="text-lg text-gray-600">
                 {(section.content as { description?: string }).description}

@@ -55,15 +55,6 @@ export default function LandingPage() {
   const logoUrl = "/logo.png";
   const shortName = siteNameConfig.shortName || "NHÀ THUỐC ADK";
 
-  // Filter sections for landing page
-  const heroSection = sections.filter(
-    (s) => s.layoutType === "HERO_IMAGE" || s.layoutType === "HERO_VIDEO"
-  );
-  const conceptSection = sections.filter((s) => s.layoutType === "SPLIT_IMAGE_TEXT");
-  const benefitsSection = sections.filter((s) => s.layoutType === "BENTO_GRID");
-  const gallerySection = sections.filter((s) => s.layoutType === "MASONRY_GRID");
-  const ctaSection = sections.filter((s) => s.layoutType === "CTA_BANNER");
-
   return (
     <main className="min-h-screen">
       <Navbar />
@@ -71,32 +62,8 @@ export default function LandingPage() {
       {/* Dynamic Sections from CMS */}
       {!isLoading && sections.length > 0 ? (
         <>
-          {/* Hero */}
-          {heroSection.length > 0 && <DynamicSectionRenderer sections={heroSection} />}
-
-          {/* Market Insight - Static B2B */}
-          <MarketInsightSection />
-
-          {/* ADK Model - Static B2B */}
-          <ADKModelSection />
-
-          {/* Concept */}
-          {conceptSection.length > 0 && <DynamicSectionRenderer sections={conceptSection} />}
-
-          {/* Investment Benefits */}
-          <FeaturesSection />
-
-          {/* Benefits Bento Grid */}
-          {benefitsSection.length > 0 && <DynamicSectionRenderer sections={benefitsSection} />}
-
-          {/* Gallery / Store Standards */}
-          {gallerySection.length > 0 && <DynamicSectionRenderer sections={gallerySection} />}
-
-          {/* Partnership FAQ */}
+          <DynamicSectionRenderer sections={sections} />
           <FAQSection faqs={faqs} />
-
-          {/* CTA Banner */}
-          {ctaSection.length > 0 && <DynamicSectionRenderer sections={ctaSection} />}
         </>
       ) : (
         <>

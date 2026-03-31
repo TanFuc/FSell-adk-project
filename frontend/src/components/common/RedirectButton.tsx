@@ -72,7 +72,9 @@ const RedirectButton = forwardRef<HTMLButtonElement, RedirectButtonProps>(
 
       // Small delay to ensure tracking request is sent
       setTimeout(() => {
-        window.location.href = targetUrl;
+        if (targetUrl) {
+          window.open(targetUrl, '_blank', 'noopener,noreferrer');
+        }
       }, 100);
     }, [targetUrl, disabled, buttonName]);
 

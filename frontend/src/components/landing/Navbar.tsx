@@ -14,7 +14,9 @@ interface LogoConfig {
 }
 
 interface SiteNameConfig {
+  prefix?: string;
   shortName?: string;
+  name?: string;
   fullName?: string;
   tagline?: string;
 }
@@ -44,6 +46,9 @@ export default function Navbar() {
   // Logo được sử dụng trực tiếp từ public folder
   const logoUrl = "/logo.png";
   const shortName = siteNameConfig.shortName || "Nhà Thuốc ADK";
+  const derivedPrefix =
+    (siteNameConfig.fullName || siteNameConfig.name || "").replace(shortName, "").trim();
+  const prefix = siteNameConfig.prefix || derivedPrefix || "Dự Án";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -89,7 +94,7 @@ export default function Navbar() {
                     isScrolled ? "text-gray-900" : "text-gray-900"
                   )}
                 >
-                  Dự Án <span className="text-adk-green">{shortName}</span>
+                  {prefix} <span className="text-adk-green">{shortName}</span>
                 </span>
               </div>
             </Link>

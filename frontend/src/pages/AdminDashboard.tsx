@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { adminApi } from "@/services/api";
+import { publicApi } from "@/services/api";
 import type { Registration, RegistrationStats, RegistrationStatus } from "@/types";
 import { getProvinceLabel, getDistrictLabel } from "@/data/locations";
 import {
@@ -59,6 +60,12 @@ const STATUS_LABELS: Record<RegistrationStatus, { label: string; color: string }
   REJECTED: { label: "Từ chối", color: "bg-red-100 text-red-800" },
 };
 
+interface SiteNameConfig {
+  shortName?: string;
+  name?: string;
+  fullName?: string;
+}
+
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -73,6 +80,16 @@ export default function AdminDashboard() {
     queryKey: ["registrationStats"],
     queryFn: () => adminApi.getRegistrationStats(),
   });
+
+  const { data: config } = useQuery({
+    queryKey: ["publicConfig"],
+    queryFn: () => publicApi.getPublicConfig(),
+    staleTime: 10 * 60 * 1000,
+  });
+
+  const siteNameConfig = (config?.site_name as SiteNameConfig) || {};
+  const adminBrandName =
+    siteNameConfig.fullName || siteNameConfig.name || siteNameConfig.shortName || "Nhà Thuốc ADK";
 
   // Fetch registrations
   const { data: registrationsData, isLoading } = useQuery({
@@ -130,7 +147,7 @@ export default function AdminDashboard() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-900">Admin Dashboard</h1>
-              <p className="text-sm text-gray-500">Nhà Thuốc ADK</p>
+              <p className="text-sm text-gray-500">{adminBrandName}</p>
             </div>
           </div>
 
