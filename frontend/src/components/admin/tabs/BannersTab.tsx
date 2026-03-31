@@ -15,6 +15,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { adminApi } from "@/services/api";
 import { ConfirmDialog } from "../ConfirmDialog";
+import { ImageUploadField } from "../ImageUploadField";
 import type { BannerPopup } from "@/types";
 
 export function BannersTab() {
@@ -231,11 +232,12 @@ export function BannersTab() {
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="imageUrl">URL Hình ảnh *</Label>
-              <Input
+              <ImageUploadField
                 id="imageUrl"
+                label="URL Hình ảnh"
+                required
                 value={formData.imageUrl}
-                onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                onChange={(url) => setFormData({ ...formData, imageUrl: url })}
                 placeholder="https://example.com/image.jpg"
               />
             </div>

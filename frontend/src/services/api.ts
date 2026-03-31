@@ -489,6 +489,21 @@ export const adminApi = {
     await api.patch("/photo/admin/reorder", { items });
   },
 
+  async uploadImage(file: File): Promise<{ imageUrl: string; key: string; contentType: string; size: number }> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await api.post<
+      ApiResponse<{ imageUrl: string; key: string; contentType: string; size: number }>
+    >("/photo/admin/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response.data.data;
+  },
+
   // === ADMIN USERS ===
   async getAllAdminUsers(): Promise<AdminUser[]> {
     const response = await api.get<ApiResponse<AdminUser[]>>("/admin-users");

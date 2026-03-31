@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, Eye, EyeOff, RefreshCw, GripVertical } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, RefreshCw, GripVertical, Upload, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
@@ -24,6 +24,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { adminApi } from "@/services/api";
 import { getErrorMessage } from "@/lib/error-handler";
+import { optimizeImageFile } from "@/lib/image-upload";
 import { ConfirmDialog } from "../ConfirmDialog";
 import type { Section, LayoutType } from "@/types";
 
@@ -41,6 +42,8 @@ const LAYOUT_TYPES: { value: LayoutType; label: string }[] = [
 export function SectionsTab() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const imageFileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Section | null>(null);
   const [deleteItem, setDeleteItem] = useState<Section | null>(null);
@@ -178,6 +181,39 @@ export function SectionsTab() {
       updateMutation.mutate({ id: editingItem.id, data: updateData });
     } else {
       createMutation.mutate(data);
+    }
+  };
+
+  const handleUploadSectionImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploadingImage(true);
+      const optimized = await optimizeImageFile(file);
+      const uploaded = await adminApi.uploadImage(optimized);
+      const currentImages = formData.images.trim();
+      const nextImages = currentImages
+        ? `${currentImages}\n${uploaded.imageUrl}`
+        : uploaded.imageUrl;
+      setFormData({ ...formData, images: nextImages });
+
+      toast({
+        title: "Upload thành công",
+        description: "Đã thêm URL ảnh vào danh sách",
+        variant: "success",
+      });
+    } catch {
+      toast({
+        title: "Upload thất bại",
+        description: "Không thể upload ảnh cho section",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploadingImage(false);
+      if (imageFileInputRef.current) {
+        imageFileInputRef.current.value = "";
+      }
     }
   };
 
@@ -332,7 +368,30 @@ export function SectionsTab() {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="images">URL Hình ảnh (mỗi URL một dòng)</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="images">URL Hình ảnh (mỗi URL một dòng)</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={isUploadingImage}
+                  onClick={() => imageFileInputRef.current?.click()}
+                >
+                  {isUploadingImage ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Upload className="w-4 h-4 mr-2" />
+                  )}
+                  Upload ảnh
+                </Button>
+                <input
+                  ref={imageFileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleUploadSectionImage}
+                />
+              </div>
               <Textarea
                 id="images"
                 value={formData.images}

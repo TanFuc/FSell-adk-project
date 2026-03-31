@@ -17,6 +17,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { adminApi } from "@/services/api";
 import { ConfirmDialog } from "../ConfirmDialog";
+import { ImageUploadField } from "../ImageUploadField";
 import type { BusinessModel } from "@/types";
 
 export function BusinessModelsTab() {
@@ -263,12 +264,12 @@ export function BusinessModelsTab() {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="iconUrl">URL Icon (tùy chọn)</Label>
-              <Input
+              <ImageUploadField
                 id="iconUrl"
+                label="URL Icon (tùy chọn)"
                 value={formData.iconUrl}
-                onChange={(e) => setFormData({ ...formData, iconUrl: e.target.value })}
-                placeholder="https://example.com/icon.svg"
+                onChange={(url) => setFormData({ ...formData, iconUrl: url })}
+                placeholder="https://example.com/icon.webp"
               />
             </div>
             <div className="grid gap-2">

@@ -17,6 +17,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { adminApi } from "@/services/api";
 import { ConfirmDialog } from "../ConfirmDialog";
+import { ImageUploadField } from "../ImageUploadField";
 import type { Event } from "@/types";
 
 export function EventsTab() {
@@ -309,11 +310,12 @@ export function EventsTab() {
               </div>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="coverImage">URL Ảnh bìa *</Label>
-              <Input
+              <ImageUploadField
                 id="coverImage"
+                label="URL Ảnh bìa"
+                required
                 value={formData.coverImage}
-                onChange={(e) => setFormData({ ...formData, coverImage: e.target.value })}
+                onChange={(url) => setFormData({ ...formData, coverImage: url })}
                 placeholder="https://example.com/image.jpg"
               />
             </div>

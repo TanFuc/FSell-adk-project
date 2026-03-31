@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { adminApi } from "@/services/api";
+import { ImageUploadField } from "../ImageUploadField";
 import type { Configuration } from "@/types";
 
 interface SiteNameConfig {
@@ -293,35 +294,30 @@ export function BrandingTab() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-2">
-              <Label htmlFor="logoMain">Logo chính (URL)</Label>
-              <Input
+              <ImageUploadField
                 id="logoMain"
-                value={logo.main}
-                onChange={(e) => setLogo({ ...logo, main: e.target.value })}
-                placeholder="https://... hoặc /logo.png"
+                label="Logo chính (URL)"
+                value={logo.main || ""}
+                onChange={(url) => setLogo({ ...logo, main: url })}
+                placeholder="https://... hoặc /logo.webp"
               />
-              {logo.main && (
-                <div className="mt-2 p-4 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <img src={logo.main} alt="Logo Preview" className="max-h-16 object-contain" />
-                </div>
-              )}
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="logoLight">Logo sáng (cho nền tối)</Label>
-              <Input
+              <ImageUploadField
                 id="logoLight"
-                value={logo.light}
-                onChange={(e) => setLogo({ ...logo, light: e.target.value })}
-                placeholder="https://... hoặc /logo-light.png"
+                label="Logo sáng (cho nền tối)"
+                value={logo.light || ""}
+                onChange={(url) => setLogo({ ...logo, light: url })}
+                placeholder="https://... hoặc /logo-light.webp"
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="favicon">Favicon</Label>
-              <Input
+              <ImageUploadField
                 id="favicon"
-                value={logo.favicon}
-                onChange={(e) => setLogo({ ...logo, favicon: e.target.value })}
-                placeholder="https://... hoặc /favicon.ico"
+                label="Favicon"
+                value={logo.favicon || ""}
+                onChange={(url) => setLogo({ ...logo, favicon: url })}
+                placeholder="https://... hoặc /favicon.webp"
               />
             </div>
           </CardContent>
