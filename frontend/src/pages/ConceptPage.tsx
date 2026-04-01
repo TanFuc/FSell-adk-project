@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { Pill, Leaf, Users, Award, TrendingUp, Shield, Heart, Store } from "lucide-react";
-import { sectionApi } from "@/api";
-import type { Section } from "@/types";
+import { businessModelApi } from "@/api";
+import type { BusinessModel } from "@/types";
 import RedirectButton from "@/components/common/RedirectButton";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
@@ -77,10 +77,14 @@ const benefits = [
 ];
 
 export default function ConceptPage() {
-  const { data: _sections = [] } = useQuery<Section[]>({
-    queryKey: ["sections", "concept"],
-    queryFn: () => sectionApi.getByLayoutType("SPLIT_IMAGE_TEXT"),
+  const { data: businessModels = [] } = useQuery<BusinessModel[]>({
+    queryKey: ["businessModels", "concept"],
+    queryFn: businessModelApi.getAll,
   });
+
+  const visibleBusinessModels = businessModels
+    .filter((model) => model.isVisible)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
 
   return (
     <main className="min-h-screen bg-white">
@@ -225,7 +229,7 @@ export default function ConceptPage() {
       </section>
 
       {/* Split Section */}
-      <section className="py-16 lg:py-24 bg-gray-50">
+      <section id="loi-ich-hop-tac" className="py-16 lg:py-24 bg-gray-50 scroll-mt-24">
         <div className="container-full">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -259,25 +263,57 @@ export default function ConceptPage() {
                 Lợi Ích Khi Hợp Tác Cùng ADK
               </h2>
 
+              <p className="text-sm text-gray-500 mb-6">
+                Nội dung phần này được đồng bộ từ Admin - tab "Mô hình KD".
+              </p>
+
               <div className="space-y-6">
-                {benefits.map((benefit, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                    className="flex gap-4"
-                  >
-                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-adk-green/10 flex items-center justify-center">
-                      <benefit.icon className="w-6 h-6 text-adk-green" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1">{benefit.title}</h3>
-                      <p className="text-gray-600">{benefit.description}</p>
-                    </div>
-                  </motion.div>
-                ))}
+                {visibleBusinessModels.length > 0
+                  ? visibleBusinessModels.map((model, index) => (
+                      <motion.div
+                        key={model.id}
+                        initial={{ opacity: 0, x: 20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.1 }}
+                        className="flex gap-4"
+                      >
+                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-adk-green/10 flex items-center justify-center overflow-hidden">
+                          {model.iconUrl ? (
+                            <img src={model.iconUrl} alt={model.name} className="w-7 h-7 object-contain" />
+                          ) : (
+                            <TrendingUp className="w-6 h-6 text-adk-green" />
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900 mb-1">{model.name}</h3>
+                          <p className="text-gray-600">{model.description}</p>
+                          {model.profitPotential && (
+                            <p className="text-sm text-adk-green font-medium mt-1">
+                              Tiềm năng: {model.profitPotential}
+                            </p>
+                          )}
+                        </div>
+                      </motion.div>
+                    ))
+                  : benefits.map((benefit, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, x: 20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.1 }}
+                        className="flex gap-4"
+                      >
+                        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-adk-green/10 flex items-center justify-center">
+                          <benefit.icon className="w-6 h-6 text-adk-green" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900 mb-1">{benefit.title}</h3>
+                          <p className="text-gray-600">{benefit.description}</p>
+                        </div>
+                      </motion.div>
+                    ))}
               </div>
 
               <div className="mt-8">

@@ -147,8 +147,11 @@ const TAB_GUIDES: Record<AdminTabKey, AdminTabGuide> = {
     description: "Quản lý các khối lợi ích/điểm mạnh mô hình.",
     affects: "Trang mô hình kinh doanh.",
     affectedComponents: ["Business Model Grid", "Benefit Cards"],
-    quickLinks: [{ label: "Mở trang mô hình", href: "/mo-hinh" }],
-    previewPath: "/mo-hinh",
+    quickLinks: [
+      { label: "Mở trang mô hình", href: "/mo-hinh" },
+      { label: "Mở đúng khối lợi ích", href: "/mo-hinh#loi-ich-hop-tac" },
+    ],
+    previewPath: "/mo-hinh#loi-ich-hop-tac",
   },
   faq: {
     title: "Hỏi đáp",
@@ -505,7 +508,7 @@ export default function AdminDashboard() {
                 <div className="flex flex-wrap gap-2">
                   {activeGuide.quickLinks.map((link) => (
                     <Button
-                      key={`${activeTab}-${link.href}`}
+                      key={`${activeTab}-${link.href}-${link.label}`}
                       variant="outline"
                       size="sm"
                       onClick={() => window.open(link.href, "_blank", "noopener,noreferrer")}
