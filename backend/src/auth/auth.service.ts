@@ -108,6 +108,26 @@ export class AuthService {
     return admin;
   }
 
+  async getCurrentAdmin(
+    userId: string,
+  ): Promise<{ id: string; email: string; fullName: string; role: string }> {
+    const admin = await this.prisma.adminUser.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        role: true,
+      },
+    });
+
+    if (!admin) {
+      throw new NotFoundException('Admin not found.');
+    }
+
+    return admin;
+  }
+
   async updateProfile(
     userId: string,
     dto: UpdateProfileDto,

@@ -15,7 +15,7 @@ interface AuthenticatedRequest {
   user: {
     sub: string;
     email: string;
-    vaiTro: string;
+    role: string;
   };
 }
 
@@ -52,11 +52,10 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Lấy thông tin tài khoản hiện tại' })
-  async getMe(@Request() req: AuthenticatedRequest): Promise<{ email: string; vaiTro: string }> {
-    return {
-      email: req.user.email,
-      vaiTro: req.user.vaiTro,
-    };
+  async getMe(
+    @Request() req: AuthenticatedRequest,
+  ): Promise<{ id: string; email: string; fullName: string; role: string }> {
+    return this.authService.getCurrentAdmin(req.user.sub);
   }
 
   @Patch('profile')

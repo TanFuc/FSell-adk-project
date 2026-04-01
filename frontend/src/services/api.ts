@@ -145,8 +145,10 @@ export const authApi = {
     return response.data.data;
   },
 
-  async getMe(): Promise<{ email: string; role: string }> {
-    const response = await api.get<ApiResponse<{ email: string; role: string }>>("/auth/me");
+  async getMe(): Promise<{ id: string; email: string; fullName: string; role: string }> {
+    const response = await api.get<
+      ApiResponse<{ id: string; email: string; fullName: string; role: string }>
+    >("/auth/me");
     return response.data.data;
   },
 
@@ -495,11 +497,7 @@ export const adminApi = {
 
     const response = await api.post<
       ApiResponse<{ imageUrl: string; key: string; contentType: string; size: number }>
-    >("/photo/admin/upload", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    >("/photo/admin/upload", formData);
 
     return response.data.data;
   },

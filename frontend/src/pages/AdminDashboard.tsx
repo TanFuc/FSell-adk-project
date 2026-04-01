@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { adminApi } from "@/services/api";
+import { authApi } from "@/services/api";
 import { publicApi } from "@/services/api";
 import type { Registration, RegistrationStats, RegistrationStatus } from "@/types";
 import { getProvinceLabel, getDistrictLabel } from "@/data/locations";
@@ -74,6 +75,15 @@ export default function AdminDashboard() {
 
   // Get admin info from localStorage
   const adminInfo = JSON.parse(localStorage.getItem("admin") || "{}");
+
+  const { data: currentAdmin } = useQuery({
+    queryKey: ["currentAdmin"],
+    queryFn: () => authApi.getMe(),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const displayAdminName =
+    currentAdmin?.fullName || adminInfo.fullName || adminInfo.hoTen || adminInfo.email || "Admin";
 
   // Fetch stats
   const { data: stats } = useQuery<RegistrationStats>({
@@ -153,7 +163,7 @@ export default function AdminDashboard() {
 
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600">
-              Xin chào, <strong>{adminInfo.hoTen}</strong>
+              Xin chào, <strong>{displayAdminName}</strong>
             </span>
             <Button variant="outline" size="sm" onClick={handleLogout}>
               <LogOut className="w-4 h-4 mr-2" />

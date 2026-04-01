@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import sharp from 'sharp';
+import sharp = require('sharp');
 
 @Injectable()
 export class R2ImageUploadService {
@@ -40,7 +40,13 @@ export class R2ImageUploadService {
 
   private async optimizeImage(fileBuffer: Buffer): Promise<Buffer> {
     try {
-      return await sharp(fileBuffer)
+      const input = this.normalizeToBuffer(fileBuffer);
+
+      if (!input.length) {
+        throw new BadRequestException('Uploaded image is empty');
+      }
+
+      return await sharp(input)
         .rotate()
         .resize({
           width: this.maxWidth,
@@ -51,9 +57,40 @@ export class R2ImageUploadService {
         .sharpen({ sigma: 1.1, m1: 1.2, m2: 2.0, x1: 2.0, y2: 10.0, y3: 20.0 })
         .webp({ quality: this.quality, effort: 5, smartSubsample: true })
         .toBuffer();
-    } catch {
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
       throw new BadRequestException('Invalid image file or unsupported format');
     }
+  }
+
+  private normalizeToBuffer(input: unknown): Buffer {
+    if (Buffer.isBuffer(input)) {
+      return input;
+    }
+
+    if (input instanceof Uint8Array) {
+      return Buffer.from(input);
+    }
+
+    if (input instanceof ArrayBuffer) {
+      return Buffer.from(input);
+    }
+
+    if (
+      typeof input === 'object' &&
+      input !== null &&
+      'type' in input &&
+      'data' in input &&
+      (input as { type?: string }).type === 'Buffer' &&
+      Array.isArray((input as { data?: unknown[] }).data)
+    ) {
+      return Buffer.from((input as { data: number[] }).data);
+    }
+
+    return Buffer.alloc(0);
   }
 
   private getR2ClientConfig() {
