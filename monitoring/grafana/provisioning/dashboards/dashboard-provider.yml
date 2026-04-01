@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: ADK Dashboards
+    orgId: 1
+    folder: ADK Monitoring
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards

@@ -19,6 +19,7 @@ import { PhotoCategoryModule } from './photo-category/photo-category.module';
 import { PhotoModule } from './photo/photo.module';
 import { HealthController } from './health.controller';
 import { LogsModule } from './logs/logs.module';
+import { MonitoringModule } from './monitoring/monitoring.module';
 import { ApiLoggingInterceptor } from './common/interceptors/api-logging.interceptor';
 
 @Module({
@@ -64,6 +65,7 @@ import { ApiLoggingInterceptor } from './common/interceptors/api-logging.interce
     PhotoCategoryModule,
     PhotoModule,
     LogsModule,
+    MonitoringModule,
   ],
   providers: [
     ApiLoggingInterceptor,

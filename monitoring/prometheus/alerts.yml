@@ -1,0 +1,41 @@
+groups:
+  - name: adk-backend-alerts
+    rules:
+      - alert: ADKHighErrorRate
+        expr: |
+          (
+            sum(rate(adk_backend_http_requests_total{status_code=~"5.."}[5m]))
+            /
+            sum(rate(adk_backend_http_requests_total[5m]))
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          service: adk-backend
+        annotations:
+          summary: "High API error rate"
+          description: "Error rate is above 5% for 5 minutes."
+
+      - alert: ADKBackendDown
+        expr: up{job="adk-backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: adk-backend
+        annotations:
+          summary: "Backend health down"
+          description: "Prometheus cannot scrape adk-backend metrics endpoint."
+
+      - alert: ADKHighP95Latency
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum(rate(adk_backend_http_request_duration_seconds_bucket[5m])) by (le)
+          ) > 0.8
+        for: 10m
+        labels:
+          severity: warning
+          service: adk-backend
+        annotations:
+          summary: "High API latency (p95)"
+          description: "p95 request latency is above 800ms for 10 minutes."

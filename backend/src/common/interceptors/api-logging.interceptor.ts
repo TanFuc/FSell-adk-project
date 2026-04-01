@@ -1,13 +1,17 @@
 import { Injectable, Logger, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, finalize, tap } from 'rxjs/operators';
 import { LogStreamService } from '../../logs/log-stream.service';
+import { MonitoringService } from '../../monitoring/monitoring.service';
 
 @Injectable()
 export class ApiLoggingInterceptor implements NestInterceptor {
   private readonly logger = new Logger(ApiLoggingInterceptor.name);
 
-  constructor(private readonly logStreamService: LogStreamService) {}
+  constructor(
+    private readonly logStreamService: LogStreamService,
+    private readonly monitoringService: MonitoringService,
+  ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const http = context.switchToHttp();
@@ -34,6 +38,7 @@ export class ApiLoggingInterceptor implements NestInterceptor {
         body: req?.body ?? null,
       },
     });
+    this.monitoringService.incrementInFlightRequests();
 
     return next.handle().pipe(
       tap(() => {
@@ -42,6 +47,7 @@ export class ApiLoggingInterceptor implements NestInterceptor {
         this.logger.log(
           `[RES:${requestId}] ${method} ${url} status=${statusCode} duration=${duration}ms`,
         );
+        this.monitoringService.observeHttpRequest(method, url, statusCode, duration);
         this.logStreamService.add({
           level: 'log',
           scope: 'api-response',
@@ -62,6 +68,7 @@ export class ApiLoggingInterceptor implements NestInterceptor {
           `[ERR:${requestId}] ${method} ${url} status=${statusCode} duration=${duration}ms message=${message}`,
           error?.stack,
         );
+        this.monitoringService.observeHttpRequest(method, url, statusCode, duration);
         this.logStreamService.add({
           level: 'error',
           scope: 'api-error',
@@ -74,6 +81,9 @@ export class ApiLoggingInterceptor implements NestInterceptor {
         });
 
         return throwError(() => error);
+      }),
+      finalize(() => {
+        this.monitoringService.decrementInFlightRequests();
       }),
     );
   }
