@@ -1,5 +1,6 @@
 import axios from "axios";
 import type { Section, BannerPopup, Event, BusinessModel, PartnershipFaq } from "@/types";
+import { appLogger } from "@/lib/logger";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3001/api";
 
@@ -9,6 +10,35 @@ const api = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+api.interceptors.request.use((config) => {
+  appLogger.info("public-api", "Request", {
+    method: config.method,
+    url: `${config.baseURL || ""}${config.url || ""}`,
+    params: config.params,
+  });
+  return config;
+});
+
+api.interceptors.response.use(
+  (response) => {
+    appLogger.info("public-api", "Response", {
+      method: response.config.method,
+      url: `${response.config.baseURL || ""}${response.config.url || ""}`,
+      status: response.status,
+    });
+    return response;
+  },
+  (error) => {
+    appLogger.error("public-api", "Response error", {
+      method: error?.config?.method,
+      url: error?.config?.url,
+      status: error?.response?.status,
+      message: error?.message,
+    });
+    return Promise.reject(error);
+  }
+);
 
 // Page Sections API
 export const sectionApi = {
@@ -117,7 +147,7 @@ export const clickTrackingApi = {
       return response;
     } catch (error) {
       // Don't throw error - tracking should not break user experience
-      console.error("Failed to track click:", error);
+      appLogger.warn("click-tracking", "Failed to track click", { error });
       return { success: false };
     }
   },

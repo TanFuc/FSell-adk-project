@@ -18,6 +18,8 @@ import { ClickTrackingModule } from './click-tracking/click-tracking.module';
 import { PhotoCategoryModule } from './photo-category/photo-category.module';
 import { PhotoModule } from './photo/photo.module';
 import { HealthController } from './health.controller';
+import { LogsModule } from './logs/logs.module';
+import { ApiLoggingInterceptor } from './common/interceptors/api-logging.interceptor';
 
 @Module({
   controllers: [HealthController],
@@ -61,8 +63,10 @@ import { HealthController } from './health.controller';
     ClickTrackingModule,
     PhotoCategoryModule,
     PhotoModule,
+    LogsModule,
   ],
   providers: [
+    ApiLoggingInterceptor,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

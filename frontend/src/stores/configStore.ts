@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { configurationApi } from "@/api";
+import { appLogger } from "@/lib/logger";
 
 interface GlobalConfig {
   primary_register_url?: {
@@ -62,7 +63,7 @@ export const useConfigStore = create<ConfigStore>((set, get) => ({
         error: null,
       });
     } catch (error) {
-      console.error("Failed to fetch configuration:", error);
+      appLogger.error("config-store", "Failed to fetch configuration", { error });
       set({
         config: {},
         isLoaded: false,

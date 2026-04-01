@@ -16,6 +16,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { adminApi } from "@/services/api";
+import type { StreamLogEntry } from "@/types";
 import {
   Select,
   SelectContent,
@@ -74,6 +76,18 @@ export function AnalyticsTab() {
     retry: 1,
   });
 
+  const {
+    data: recentLogs = [],
+    isLoading: logsLoading,
+    refetch: refetchLogs,
+    error: logsError,
+  } = useQuery<StreamLogEntry[]>({
+    queryKey: ["recentLogs"],
+    queryFn: () => adminApi.getRecentLogs(120),
+    retry: 1,
+    refetchInterval: 5000,
+  });
+
   // Get all unique button names for filter
   const buttonOptions = stats?.map((stat) => stat.buttonName) || [];
 
@@ -81,6 +95,7 @@ export function AnalyticsTab() {
     refetchStats();
     refetchHistory();
     refetchDetails();
+    refetchLogs();
   };
 
   // Calculate total stats based on time range
@@ -144,7 +159,7 @@ export function AnalyticsTab() {
   return (
     <div className="space-y-6">
       {/* Error Display */}
-      {(statsError || historyError || detailsError) && (
+      {(statsError || historyError || detailsError || logsError) && (
         <Card className="p-4 bg-red-50 border-red-200">
           <div className="flex items-center gap-3">
             <div className="text-red-600 font-semibold">Lỗi tải dữ liệu:</div>
@@ -152,6 +167,7 @@ export function AnalyticsTab() {
               {statsError && "Không thể tải thống kê. "}
               {historyError && "Không thể tải lịch sử. "}
               {detailsError && "Không thể tải chi tiết. "}
+              {logsError && "Không thể tải log stream. "}
               Vui lòng thử lại.
             </div>
             <Button variant="outline" size="sm" onClick={handleRefresh} className="ml-auto">
@@ -262,6 +278,7 @@ export function AnalyticsTab() {
         <TabsList>
           <TabsTrigger value="overview">Tổng quan</TabsTrigger>
           <TabsTrigger value="details">Chi tiết Click</TabsTrigger>
+          <TabsTrigger value="logs">Log Stream</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
@@ -515,6 +532,69 @@ export function AnalyticsTab() {
                               {record.ipAddress || "Unknown"}
                             </span>
                           </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="logs" className="space-y-4">
+          <Card className="overflow-hidden">
+            <div className="p-6 border-b flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Log Stream API</h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  Dữ liệu mới nhất từ endpoint /api/logs/recent (auto refresh mỗi 5 giây)
+                </p>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => refetchLogs()}>
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Làm mới log
+              </Button>
+            </div>
+            <div className="overflow-x-auto">
+              {logsLoading ? (
+                <div className="p-8 text-center text-gray-500">Đang tải log...</div>
+              ) : recentLogs.length === 0 ? (
+                <div className="p-8 text-center text-gray-500">Chưa có log gần đây</div>
+              ) : (
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Thời gian
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Level
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Scope
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Message
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {recentLogs.map((entry) => (
+                      <tr key={entry.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                          {formatDate(entry.timestamp)}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <Badge variant={entry.level === "error" ? "destructive" : "outline"}>
+                            {entry.level}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+                          {entry.scope}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          <div className="max-w-2xl break-words">{entry.message}</div>
                         </td>
                       </tr>
                     ))}

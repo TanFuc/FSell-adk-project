@@ -4,9 +4,20 @@ pre-commit:
     cleanup-debug-and-tags:
       run: node scripts/cleanup-debug-tags.mjs --write
 
+    cleanup-check:
+      run: node scripts/cleanup-debug-tags.mjs --check
+
     format-backend:
       glob: backend/src/**/*.ts
       run: npx --prefix backend prettier --write -- {staged_files}
+
+    lint-unused-backend:
+      glob: backend/src/**/*.ts
+      run: npx --prefix backend eslint --max-warnings=0 --no-error-on-unmatched-pattern {staged_files}
+
+    lint-unused-frontend:
+      glob: frontend/src/**/*.{ts,tsx}
+      run: npx --prefix frontend eslint --max-warnings=0 --no-error-on-unmatched-pattern {staged_files}
 
     test-backend:
       run: cd backend && npm run test -- --passWithNoTests

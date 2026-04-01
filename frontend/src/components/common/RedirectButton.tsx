@@ -1,6 +1,7 @@
 import { forwardRef, useCallback } from "react";
 import { motion, type HTMLMotionProps } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { appLogger } from "@/lib/logger";
 import { ExternalLink, ArrowRight } from "lucide-react";
 import { clickTrackingApi } from "@/api";
 import { useRegisterUrl } from "@/stores/configStore";
@@ -66,7 +67,7 @@ const RedirectButton = forwardRef<HTMLButtonElement, RedirectButtonProps>(
           });
         } catch (error) {
           // Tracking error should not prevent redirect
-          console.error("Click tracking failed:", error);
+          appLogger.warn("redirect-button", "Click tracking failed", { error });
         }
       }
 

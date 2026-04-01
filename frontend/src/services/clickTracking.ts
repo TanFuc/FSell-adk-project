@@ -1,5 +1,6 @@
 // Click Tracking Service
 // This service helps track user interactions with CTA buttons
+import { appLogger } from "@/lib/logger";
 
 export interface TrackClickData {
   buttonName: string;
@@ -41,7 +42,7 @@ export async function trackClick(data: TrackClickData): Promise<boolean> {
 
     return response.ok;
   } catch (error) {
-    console.error("Failed to track click:", error);
+    appLogger.error("click-tracking-service", "Failed to track click", { error });
     return false;
   }
 }
@@ -73,7 +74,7 @@ export async function getClickStats(buttonName?: string, token?: string): Promis
     const result = await response.json();
     return result.data || [];
   } catch (error) {
-    console.error("Failed to get click stats:", error);
+    appLogger.error("click-tracking-service", "Failed to get click stats", { error });
     return [];
   }
 }
@@ -111,7 +112,7 @@ export async function getClickHistory(
     const result = await response.json();
     return result.data || [];
   } catch (error) {
-    console.error("Failed to get click history:", error);
+    appLogger.error("click-tracking-service", "Failed to get click history", { error });
     return [];
   }
 }
@@ -203,7 +204,7 @@ export async function getClickDetails(
     const result = await response.json();
     return result.data || { data: [], total: 0, page: 1, totalPages: 0 };
   } catch (error) {
-    console.error("Failed to get click details:", error);
+    appLogger.error("click-tracking-service", "Failed to get click details", { error });
     return { data: [], total: 0, page: 1, totalPages: 0 };
   }
 }

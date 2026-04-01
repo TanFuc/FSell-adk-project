@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+import { appLogger } from "@/lib/logger";
 import type {
   ApiResponse,
   ApiError,
@@ -22,6 +23,7 @@ import type {
   AdminUser,
   CreateAdminUserRequest,
   UpdateAdminUserRequest,
+  StreamLogEntry,
 } from "@/types";
 
 const API_URL = import.meta.env.VITE_API_URL || "/api";
@@ -39,13 +41,34 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  appLogger.info("api-client", "Request", {
+    method: config.method,
+    url: `${config.baseURL || ""}${config.url || ""}`,
+    params: config.params,
+  });
+
   return config;
 });
 
 // Response interceptor to handle errors
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    appLogger.info("api-client", "Response", {
+      method: response.config.method,
+      url: `${response.config.baseURL || ""}${response.config.url || ""}`,
+      status: response.status,
+    });
+    return response;
+  },
   (error: AxiosError<ApiError>) => {
+    appLogger.error("api-client", "Response error", {
+      status: error.response?.status,
+      url: error.config?.url,
+      method: error.config?.method,
+      message: error.message,
+    });
+
     if (error.response?.status === 401) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("admin");
@@ -538,6 +561,12 @@ export const adminApi = {
 
   async deleteAdminUser(id: string): Promise<{ message: string }> {
     const response = await api.delete<ApiResponse<{ message: string }>>(`/admin-users/${id}`);
+    return response.data.data;
+  },
+
+  // === LOG STREAM ===
+  async getRecentLogs(limit = 100): Promise<StreamLogEntry[]> {
+    const response = await api.get<ApiResponse<StreamLogEntry[]>>(`/logs/recent?limit=${limit}`);
     return response.data.data;
   },
 };

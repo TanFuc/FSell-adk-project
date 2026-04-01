@@ -18,6 +18,15 @@ export interface ApiError {
   };
 }
 
+export interface StreamLogEntry {
+  id: string;
+  level: "debug" | "log" | "warn" | "error";
+  scope: string;
+  message: string;
+  timestamp: string;
+  meta?: Record<string, unknown>;
+}
+
 // Registration Types
 export interface RegistrationRequest {
   fullName: string;

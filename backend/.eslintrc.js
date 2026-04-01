@@ -27,7 +27,7 @@ module.exports = {
     '@typescript-eslint/no-inferrable-types': 'off',
 
     // General rules
-    'no-console': ['warn', { allow: ['warn', 'error'] }],
+    'no-console': 'error',
     'prefer-const': 'error',
     'no-var': 'error',
     'eqeqeq': ['error', 'always'],

@@ -1,7 +1,9 @@
-import { Module, Global } from '@nestjs/common';
+import { Module, Global, Logger } from '@nestjs/common';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { redisStore } from 'cache-manager-redis-yet';
+
+const logger = new Logger('RedisModule');
 
 @Global()
 @Module({
@@ -16,7 +18,7 @@ import { redisStore } from 'cache-manager-redis-yet';
 
         // If Redis is explicitly disabled, use in-memory cache
         if (disableRedis) {
-          console.log(`ℹ️  Redis disabled by configuration. Using in-memory cache.`);
+          logger.log('Redis disabled by configuration. Using in-memory cache.');
           return {
             ttl: 300000, // 5 minutes default TTL
             max: 100, // Maximum number of items in cache
@@ -25,7 +27,7 @@ import { redisStore } from 'cache-manager-redis-yet';
 
         try {
           // Try to connect to Redis
-          const storeConfig: any = {
+          const storeConfig: Record<string, unknown> = {
             socket: {
               host,
               port,
@@ -41,15 +43,15 @@ import { redisStore } from 'cache-manager-redis-yet';
 
           const store = await redisStore(storeConfig);
 
-          console.log(`✅ Redis connected successfully at ${host}:${port}`);
+          logger.log(`Redis connected successfully at ${host}:${port}`);
           return { store };
         } catch (error) {
           // Fallback to in-memory cache if Redis is unavailable
-          console.warn(
-            `⚠️  Redis connection failed at ${host}:${port}. Using in-memory cache as fallback.`,
+          logger.warn(
+            `Redis connection failed at ${host}:${port}. Using in-memory cache as fallback.`,
           );
-          console.warn(`   Error: ${error.message}`);
-          console.warn(`   To disable this warning, set DISABLE_REDIS=true in .env`);
+          logger.warn(`Error: ${(error as Error)?.message || 'Unknown error'}`);
+          logger.warn('To disable this warning, set DISABLE_REDIS=true in .env');
 
           // Return in-memory cache configuration
           return {

@@ -7,11 +7,12 @@ const targets = [path.join(root, "backend", "src"), path.join(root, "frontend", 
 const exts = new Set([".ts", ".tsx", ".js", ".jsx"]);
 
 const isWrite = process.argv.includes("--write");
+const isCheck = process.argv.includes("--check");
 const tagPattern = /\b(TODO|FIXME|HACK|XXX|DEBUG)\b/i;
-const consoleLogPattern = /^\s*console\.log\(.*\);?\s*$/;
+const consolePattern = /^\s*console\.(log|error|warn|info|debug)\(.*\);?\s*$/;
 
 const changedFiles = [];
-let removedConsoleLogCount = 0;
+let removedConsoleCount = 0;
 let removedTagCommentCount = 0;
 
 function walk(dir, files = []) {
@@ -38,8 +39,8 @@ function processFile(filePath) {
   for (const line of lines) {
     const trimmed = line.trim();
 
-    if (consoleLogPattern.test(trimmed)) {
-      removedConsoleLogCount += 1;
+    if (consolePattern.test(trimmed)) {
+      removedConsoleCount += 1;
       continue;
     }
 
@@ -76,7 +77,7 @@ if (changedFiles.length === 0) {
 }
 
 console.log(`cleanup-debug-tags: changed ${changedFiles.length} file(s)`);
-console.log(`- removed console.log lines: ${removedConsoleLogCount}`);
+console.log(`- removed console lines: ${removedConsoleCount}`);
 console.log(`- removed tag comments: ${removedTagCommentCount}`);
 for (const file of changedFiles.slice(0, 20)) {
   console.log(`  * ${file}`);
@@ -84,4 +85,8 @@ for (const file of changedFiles.slice(0, 20)) {
 
 if (!isWrite) {
   console.log("Run with --write to apply changes.");
+}
+
+if (isCheck && changedFiles.length > 0) {
+  process.exit(1);
 }
