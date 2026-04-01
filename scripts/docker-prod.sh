@@ -45,20 +45,39 @@ case "$ACTION" in
   up-fe)
     docker compose --env-file .env -f docker-compose.prod.yml up -d frontend
     ;;
+  up-monitoring)
+    docker compose --env-file .env -f docker-compose.prod.yml up -d prometheus grafana
+    ;;
   down)
     docker compose --env-file .env -f docker-compose.prod.yml down
     ;;
   logs)
     docker compose --env-file .env -f docker-compose.prod.yml logs -f --tail=200
     ;;
+  logs-monitoring)
+    docker compose --env-file .env -f docker-compose.prod.yml logs -f --tail=200 prometheus grafana
+    ;;
+  status)
+    docker compose --env-file .env -f docker-compose.prod.yml ps
+    ;;
+  health)
+    BACKEND_PORT="${BACKEND_PORT:-3000}"
+    echo "Checking backend health endpoint..."
+    curl -fsS "http://localhost:${BACKEND_PORT}/api/health" || {
+      echo "Backend health check failed. Ensure stack is running." >&2
+      exit 1
+    }
+    ;;
   setup)
     docker compose --env-file .env -f docker-compose.prod.yml build --pull --parallel
     docker compose --env-file .env -f docker-compose.prod.yml up -d
     echo "Production stack is up."
     echo "Run migration if needed: docker compose --env-file .env -f docker-compose.prod.yml exec backend npm run prisma:deploy"
+    echo "Prometheus: http://localhost:9090"
+    echo "Grafana   : http://localhost:3100"
     ;;
   *)
-    echo "Usage: ./scripts/docker-prod.sh [build-all|build-be|build-fe|up-all|up-be|up-fe|down|logs|setup]"
+    echo "Usage: ./scripts/docker-prod.sh [build-all|build-be|build-fe|up-all|up-be|up-fe|up-monitoring|down|logs|logs-monitoring|status|health|setup]"
     exit 1
     ;;
 esac

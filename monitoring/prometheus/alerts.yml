@@ -39,3 +39,13 @@ groups:
         annotations:
           summary: "High API latency (p95)"
           description: "p95 request latency is above 800ms for 10 minutes."
+
+      - alert: ADKDBConnectionSpike
+        expr: adk_backend_db_connections > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: adk-backend
+        annotations:
+          summary: "Database connection spike"
+          description: "DB active connections exceeded 80 for 5 minutes."
