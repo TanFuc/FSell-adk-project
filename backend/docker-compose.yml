@@ -25,12 +25,16 @@ services:
     image: redis:7-alpine
     container_name: adk-redis
     restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-change_me_strong_redis_password}
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    command: >
+      --requirepass ${REDIS_PASSWORD:-change_me_strong_redis_password}
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-change_me_strong_redis_password}", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -48,7 +52,8 @@ services:
   #     DATABASE_URL: postgresql://postgres:postgres@postgres:5432/adk_db?schema=public
   #     REDIS_HOST: redis
   #     REDIS_PORT: 6379
-  #     FRONTEND_URL: http://localhost:5173
+  #     REDIS_PASSWORD: ${REDIS_PASSWORD:-change_me_strong_redis_password}
+  #     FRONTEND_URL: https://www.sieuthithuocadk.com
   #     ENCRYPTION_KEY: your-32-character-encryption-key
   #     JWT_SECRET: your-jwt-secret-key-2024
   #   depends_on:

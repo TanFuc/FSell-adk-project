@@ -66,8 +66,8 @@ try {
     'health' {
       Write-Host 'Checking backend health endpoint...' -ForegroundColor Cyan
       try {
-        $backendPort = if ($env:BACKEND_PORT) { $env:BACKEND_PORT } else { 3000 }
-        $health = Invoke-RestMethod -Uri "http://localhost:$backendPort/api/health" -TimeoutSec 10
+        $healthUrl = if ($env:HEALTHCHECK_URL) { $env:HEALTHCHECK_URL } else { 'https://www.sieuthithuocadk.com/api/health' }
+        $health = Invoke-RestMethod -Uri $healthUrl -TimeoutSec 10
         Write-Host ("Backend health: " + ($health | ConvertTo-Json -Compress)) -ForegroundColor Green
       }
       catch {
@@ -80,9 +80,14 @@ try {
       Write-Host 'Production stack is up. Next step: run DB migration if needed.' -ForegroundColor Green
       Write-Host 'Command: docker compose --env-file .env -f docker-compose.prod.yml exec backend npm run prisma:deploy'
       Write-Host ''
+      Write-Host 'App URLs:' -ForegroundColor Cyan
+      Write-Host '  Frontend  : https://www.sieuthithuocadk.com'
+      Write-Host '  Backend   : https://www.sieuthithuocadk.com/api'
+      Write-Host '  Swagger   : https://www.sieuthithuocadk.com/api/docs'
+      Write-Host ''
       Write-Host 'Monitoring URLs:' -ForegroundColor Cyan
-      Write-Host '  Prometheus: http://localhost:9090'
-      Write-Host '  Grafana   : http://localhost:3100'
+      Write-Host '  Prometheus: http://127.0.0.1:9090'
+      Write-Host '  Grafana   : http://127.0.0.1:3100'
     }
   }
 }

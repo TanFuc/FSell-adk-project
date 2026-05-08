@@ -15,6 +15,7 @@
    - `JWT_SECRET`
    - `ENCRYPTION_KEY`
    - `R2_*` keys (if using upload)
+   - `FRONTEND_URL` and `FRONTEND_URLS` for CORS allow-list
 
 ## Quick commands (Windows)
 
@@ -48,11 +49,25 @@ scripts\docker-build-prod.bat down
 
 ## Service URLs
 
-- Frontend: `http://localhost:80`
-- Backend API: `http://localhost:3000/api`
-- Swagger: `http://localhost:3000/api/docs`
-- Prometheus: `http://localhost:9090`
-- Grafana: `http://localhost:3100`
+- Frontend: `https://www.sieuthithuocadk.com`
+- Backend API: `https://www.sieuthithuocadk.com/api`
+- Swagger: `https://www.sieuthithuocadk.com/api/docs`
+- Prometheus: `http://127.0.0.1:9090`
+- Grafana: `http://127.0.0.1:3100`
+
+## Production Ports
+
+- Frontend container is exposed on host port `11111` (`FRONTEND_PORT=11111`)
+- Backend container is exposed on host port `9999` (`BACKEND_PORT=9999`)
+
+## Production CORS
+
+- Backend CORS allow-list is controlled by `.env` values:
+   - `FRONTEND_URL` (single origin)
+   - `FRONTEND_URLS` (comma-separated origins)
+- Example:
+   - `FRONTEND_URL=https://www.sieuthithuocadk.com`
+   - `FRONTEND_URLS=https://www.sieuthithuocadk.com`
 
 ## Monitoring notes
 

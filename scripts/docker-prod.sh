@@ -61,9 +61,9 @@ case "$ACTION" in
     docker compose --env-file .env -f docker-compose.prod.yml ps
     ;;
   health)
-    BACKEND_PORT="${BACKEND_PORT:-3000}"
+    HEALTHCHECK_URL="${HEALTHCHECK_URL:-https://www.sieuthithuocadk.com/api/health}"
     echo "Checking backend health endpoint..."
-    curl -fsS "http://localhost:${BACKEND_PORT}/api/health" || {
+    curl -fsS "${HEALTHCHECK_URL}" || {
       echo "Backend health check failed. Ensure stack is running." >&2
       exit 1
     }
@@ -73,8 +73,11 @@ case "$ACTION" in
     docker compose --env-file .env -f docker-compose.prod.yml up -d
     echo "Production stack is up."
     echo "Run migration if needed: docker compose --env-file .env -f docker-compose.prod.yml exec backend npm run prisma:deploy"
-    echo "Prometheus: http://localhost:9090"
-    echo "Grafana   : http://localhost:3100"
+    echo "Frontend : https://www.sieuthithuocadk.com"
+    echo "Backend  : https://www.sieuthithuocadk.com/api"
+    echo "Swagger  : https://www.sieuthithuocadk.com/api/docs"
+    echo "Prometheus: http://127.0.0.1:9090"
+    echo "Grafana   : http://127.0.0.1:3100"
     ;;
   *)
     echo "Usage: ./scripts/docker-prod.sh [build-all|build-be|build-fe|up-all|up-be|up-fe|up-monitoring|down|logs|logs-monitoring|status|health|setup]"

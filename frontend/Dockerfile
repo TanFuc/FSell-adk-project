@@ -12,6 +12,12 @@ RUN npm ci
 # Copy source code
 COPY . .
 
+# Inject production API URL during build time
+ARG VITE_API_URL=/api
+ARG VITE_GA_ID=
+ENV VITE_API_URL=${VITE_API_URL}
+ENV VITE_GA_ID=${VITE_GA_ID}
+
 # Build application
 RUN npm run build
 
