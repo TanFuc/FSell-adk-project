@@ -215,7 +215,7 @@ function EventCard({ event, featured = false }: { event: Event; featured?: boole
 }
 
 export default function EventsPage() {
-  const { data: featuredEvents = [], isLoading: loadingFeatured } = useQuery<Event[]>({
+  const { data: featuredEvents = [] } = useQuery<Event[]>({
     queryKey: ["events", "featured"],
     queryFn: eventApi.getFeatured,
   });

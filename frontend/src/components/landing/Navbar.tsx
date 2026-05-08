@@ -7,12 +7,6 @@ import { cn } from "@/lib/utils";
 import RedirectButton from "@/components/common/RedirectButton";
 import { publicApi } from "@/services/api";
 
-interface LogoConfig {
-  main?: string;
-  light?: string;
-  favicon?: string;
-}
-
 interface SiteNameConfig {
   prefix?: string;
   shortName?: string;

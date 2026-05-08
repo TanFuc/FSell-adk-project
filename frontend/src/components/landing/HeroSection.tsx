@@ -3,12 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import DangKyForm from "./DangKyForm";
 import { publicApi } from "@/services/api";
 
-interface LogoConfig {
-  main?: string;
-  light?: string;
-  favicon?: string;
-}
-
 interface SiteNameConfig {
   shortName?: string;
   fullName?: string;

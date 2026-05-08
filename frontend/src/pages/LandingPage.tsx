@@ -11,12 +11,6 @@ import FAQSection from "@/components/landing/FAQSection";
 import Footer from "@/components/landing/Footer";
 import RedirectButton from "@/components/common/RedirectButton";
 
-interface LogoConfig {
-  main?: string;
-  light?: string;
-  favicon?: string;
-}
-
 interface SiteNameConfig {
   shortName?: string;
   fullName?: string;

@@ -11,12 +11,6 @@ interface SiteNameConfig {
   tagline?: string;
 }
 
-interface LogoConfig {
-  main?: string;
-  light?: string;
-  favicon?: string;
-}
-
 interface ContactInfoConfig {
   hotline?: string;
   email?: string;

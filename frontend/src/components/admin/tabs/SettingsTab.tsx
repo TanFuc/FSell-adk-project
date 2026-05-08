@@ -15,7 +15,6 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { adminApi } from "@/services/api";
 import { ConfirmDialog } from "../ConfirmDialog";
-import { OptimizedImage } from "@/components/common/OptimizedImage";
 import type { Configuration } from "@/types";
 
 export function SettingsTab() {
@@ -34,22 +33,6 @@ export function SettingsTab() {
     queryKey: ["adminSettings"],
     queryFn: () => adminApi.getAllSettings(),
   });
-
-  // Extract logo settings
-  const logoSettings = useMemo(() => {
-    const logoMain = settings.find((s) => s.key === "logo_url");
-    const logoLight = settings.find((s) => s.key === "logo_light_url");
-    const favicon = settings.find((s) => s.key === "favicon_url");
-
-    return {
-      main: logoMain?.value as string | undefined,
-      light: logoLight?.value as string | undefined,
-      favicon: favicon?.value as string | undefined,
-      mainSetting: logoMain,
-      lightSetting: logoLight,
-      faviconSetting: favicon,
-    };
-  }, [settings]);
 
   // Regular settings (non-logo)
   const regularSettings = useMemo(() => {
