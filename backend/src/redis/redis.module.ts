@@ -11,7 +11,7 @@ const logger = new Logger('RedisModule');
     CacheModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
-        const host = configService.get<string>('REDIS_HOST') || 'localhost';
+        const host = configService.get<string>('REDIS_HOST') || 'redis';
         const port = configService.get<number>('REDIS_PORT') || 6379;
         const password = configService.get<string>('REDIS_PASSWORD');
         const disableRedis = configService.get<string>('DISABLE_REDIS') === 'true';

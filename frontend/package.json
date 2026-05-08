@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "start": "vite preview",
+    "start:prod": "npm run build && npm run start",
     "lint": "eslint .",
     "lint:check": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json",

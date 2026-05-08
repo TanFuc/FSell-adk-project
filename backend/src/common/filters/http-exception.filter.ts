@@ -23,6 +23,17 @@ interface ErrorResponse {
 export class HttpExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(HttpExceptionFilter.name);
 
+  private isSuspiciousProbePath(url: string): boolean {
+    const normalized = url.toLowerCase();
+    return (
+      normalized.includes('/.env') ||
+      normalized.includes('/.git') ||
+      normalized.includes('/wp-admin') ||
+      normalized.includes('/phpmyadmin') ||
+      normalized.includes('/config')
+    );
+  }
+
   catch(exception: Error, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -68,10 +79,16 @@ export class HttpExceptionFilter implements ExceptionFilter {
       message = vietnameseMessages[status];
     }
 
-    this.logger.error(
-      `${request.method} ${request.url} - ${status} - ${exception.message}`,
-      exception.stack,
-    );
+    const errorMessage = exception.message || 'Unexpected error';
+
+    if (status >= 500) {
+      this.logger.error(`${request.method} ${request.url} - ${status} - ${errorMessage}`, exception.stack);
+    } else if (status === 404 && this.isSuspiciousProbePath(request.url)) {
+      // Common bot scans (e.g. /.env) are expected on public servers; keep logs low-noise.
+      this.logger.warn(`Blocked probe request: ${request.method} ${request.url} (${status})`);
+    } else {
+      this.logger.warn(`${request.method} ${request.url} - ${status} - ${errorMessage}`);
+    }
 
     const errorResponse: ErrorResponse = {
       success: false,

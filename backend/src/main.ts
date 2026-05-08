@@ -28,9 +28,36 @@ async function bootstrap() {
   );
 
   // CORS
+  const configuredOrigins = [
+    process.env.FRONTEND_URL || 'https://www.sieuthithuocadk.com',
+    process.env.FRONTEND_URLS,
+  ]
+    .filter(Boolean)
+    .flatMap(value => (value as string).split(','))
+    .map(origin => origin.trim())
+    .filter(Boolean);
+
+  const allowedOrigins = Array.from(new Set(configuredOrigins));
+
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: (origin, callback) => {
+      // Allow server-to-server and same-origin requests that do not include Origin
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      logger.warn(`Blocked CORS request from origin: ${origin}`);
+      return callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    exposedHeaders: ['Content-Type', 'Content-Length'],
+    maxAge: 86400,
   });
 
   // Global Prefix
@@ -71,9 +98,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  const port = process.env.PORT || 3000;
+  const port = Number(process.env.PORT) || 9999;
   await app.listen(port);
-  logger.log(`Server running on http://localhost:${port}`);
-  logger.log(`API Docs: http://localhost:${port}/api/docs`);
+  logger.log(`Server running on https://www.sieuthithuocadk.com (internal port ${port})`);
+  logger.log('API Docs: https://www.sieuthithuocadk.com/api/docs');
 }
 bootstrap();
