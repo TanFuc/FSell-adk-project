@@ -5,7 +5,7 @@ import crypto from 'node:crypto';
 import { performance } from 'node:perf_hooks';
 import sharp from 'sharp';
 
-const baseUrl = process.env.TEST_API_BASE_URL || 'http://localhost:3010/api';
+const baseUrl = process.env.TEST_API_BASE_URL || 'https://www.sieuthithuocadk.com/api';
 const adminEmail = process.env.TEST_ADMIN_EMAIL || 'admin@adkpharma.vn';
 const adminPassword = process.env.TEST_ADMIN_PASSWORD || 'Admin@2025';
 

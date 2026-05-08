@@ -1,5 +1,5 @@
 param(
-  [string]$BaseUrl = 'http://localhost:3010/api',
+  [string]$BaseUrl = 'https://www.sieuthithuocadk.com/api',
   [string]$AdminEmail = 'admin@adkpharma.vn',
   [string]$AdminPassword = 'Admin@2025'
 )
