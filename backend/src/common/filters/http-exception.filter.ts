@@ -82,7 +82,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const errorMessage = exception.message || 'Unexpected error';
 
     if (status >= 500) {
-      this.logger.error(`${request.method} ${request.url} - ${status} - ${errorMessage}`, exception.stack);
+      this.logger.error(
+        `${request.method} ${request.url} - ${status} - ${errorMessage}`,
+        exception.stack,
+      );
     } else if (status === 404 && this.isSuspiciousProbePath(request.url)) {
       // Common bot scans (e.g. /.env) are expected on public servers; keep logs low-noise.
       this.logger.warn(`Blocked probe request: ${request.method} ${request.url} (${status})`);
